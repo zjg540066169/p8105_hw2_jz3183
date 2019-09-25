@@ -1,0 +1,42 @@
+---
+title: "p8105_hw2_jz3183"
+author: "Jungang Zou"
+date: "9/25/2019"
+output: github_document
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library("tidyverse")
+library("readxl")
+set.seed(1)
+options(tibble.print_min = 3)
+```
+
+# Homework 2 for Data Science Course p8105
+
+This is an R Markdown document for homework 2 in course p8105. The author is Jungang Zou whose UNI is jz3183.
+
+## Problem 1
+
+```{r df_p1_create, collapse = TRUE}
+# create the data frame
+df_trash_wheel = read_excel('./HealthyHarborWaterWheelTotals2018-7-28.xlsx', sheet = "Mr. Trash Wheel", skip = 1) %>% 
+  select(-...15) %>% 
+  janitor::clean_names() %>% 
+  drop_na(dumpster) %>% 
+  mutate(sports_balls = as.integer(round(sports_balls)))
+  
+# display the data frame
+df_trash_wheel
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
