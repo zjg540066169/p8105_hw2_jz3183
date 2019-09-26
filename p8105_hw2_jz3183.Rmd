@@ -19,9 +19,10 @@ This is an R Markdown document for homework 2 in course p8105. The author is Jun
 
 ## Problem 1
 
-```{r df_p1_create, collapse = TRUE}
-# create the data frame
-df_trash_wheel = read_excel('./HealthyHarborWaterWheelTotals2018-7-28.xlsx', sheet = "Mr. Trash Wheel", skip = 1) %>% 
+```{r df_trash_wheel_create, collapse = TRUE}
+# read the data frame from excel file on sheet named "Mr. Trash Wheel"
+df_trash_wheel = 
+  read_excel('./HealthyHarborWaterWheelTotals2018-7-28.xlsx', sheet = "Mr. Trash Wheel", skip = 1) %>% 
   select(-...15) %>% 
   janitor::clean_names() %>% 
   drop_na(dumpster) %>% 
@@ -31,12 +32,143 @@ df_trash_wheel = read_excel('./HealthyHarborWaterWheelTotals2018-7-28.xlsx', she
 df_trash_wheel
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+
+
+```{r df_precipitation_create, collapse = TRUE}
+# read the data frame from excel file on sheet named "Mr. Tra"
+
+df_precipitation_2017 = 
+  read_excel('./HealthyHarborWaterWheelTotals2018-7-28.xlsx', sheet = "2017 Precipitation", skip = 1) %>% 
+  janitor::clean_names() %>% 
+  drop_na() %>% 
+  mutate(year = "2017")
+
+
+df_precipitation_2018 = 
+  read_excel('./HealthyHarborWaterWheelTotals2018-7-28.xlsx', sheet = "2018 Precipitation", skip = 1) %>% 
+  janitor::clean_names() %>% 
+  drop_na() %>% 
+  mutate(year = "2018")
+
+df_precipitation = 
+  bind_rows(df_precipitation_2017, df_precipitation_2018) %>% 
+  mutate(month = month.name[month])
+
+# display the data frame
+df_precipitation
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+## Problem 2
+
+```{r df_five_thirty_eight_create, collapse = TRUE}
+# read the data frame from excel file on sheet named "Mr. Trash Wheel"
+df_pols_month = 
+  read_csv('./fivethirtyeight_datasets/pols-month.csv') %>% 
+  janitor::clean_names() %>% 
+  separate(mon, into = c("year", "month", "day"), sep = "-") %>% 
+  mutate(month = month.name[as.integer(month)]) %>% 
+  pivot_longer(
+    c(prez_gop, prez_dem),
+    names_to = "president", 
+    values_to = "president_value",
+    names_prefix = "prez_"
+  ) %>% 
+  filter(president_value == 1) %>% 
+  select(-president_value, -day)
+  
+#view(df_pols_month)
+
+df_snp = 
+  read_csv('./fivethirtyeight_datasets/snp.csv') %>% 
+  janitor::clean_names() %>% 
+  separate(date, into = c("month", "day", "year"), sep = "/") %>% 
+  arrange(year, month) %>% 
+  mutate(month = month.name[as.integer(month)]) %>% 
+  select(year, month, everything(), -day)
+
+
+
+
+df_unemployment = 
+  read_csv('./fivethirtyeight_datasets/unemployment.csv') %>% 
+  janitor::clean_names() %>% 
+  mutate(year = as.character(year)) %>% 
+  pivot_longer(
+    jan:dec,
+    names_to = "month", 
+    values_to = "month_value"
+  ) %>% 
+  mutate(month = str_subset(month.name, str_to_sentence(month)))
+
+
+  
+  
+  
+  
+
+
+
+
+  
+  
+  
+# display the data frame
+df_pols_month
+df_unemployment 
+df_snp
+```
+
+
+```{r df_merge_create, collapse = TRUE}
+# read the data frame from excel file on sheet named "Mr. Tra"
+
+df_merge = 
+  left_join(df_pols_month, df_snp, by = c("year", "month")) %>% 
+  left_join(., df_unemployment, by = c("year", "month"))
+
+
+```
+
+
+## Problem 3
+
+```{r df_popular_baby_names_create, collapse = TRUE}
+# read the data frame from excel file on sheet named "Mr. Trash Wheel"
+df_popular_baby_names = 
+  read_csv('./Popular_Baby_Names.csv') %>% 
+  janitor::clean_names() %>% 
+  mutate_all(~replace(., ethnicity == "ASIAN AND PACI", "ASIAN AND PACIFIC ISLANDER")) %>% 
+  mutate_all(~replace(., ethnicity == "BLACK NON HISP", "BLACK NON HISPANIC")) %>% 
+  mutate_all(~replace(., ethnicity == "WHITE NON HISP", "WHITE NON HISPANIC")) %>% 
+  distinct()
+
+olivia_data = 
+  pivot_wider(
+    df_popular_baby_names,
+    id_cols = c(ethnicity, childs_first_name),
+    names_from = year_of_birth, 
+    values_from = rank
+  ) %>% 
+  #mutate_all(~replace(., is.na(.), 0)) %>% 
+  filter(childs_first_name == "Olivia")
+  
+
+
+olivia_data
+
+
+popular_male_name = 
+  filter(df_popular_baby_names, rank == 1, gender == "MALE") %>% 
+  pivot_wider(
+    id_cols = ethnicity,
+    names_from = year_of_birth, 
+    values_from = childs_first_name
+  ) 
+
+popular_male_name
+
+```
