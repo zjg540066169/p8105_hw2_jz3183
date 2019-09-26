@@ -146,15 +146,18 @@ df_popular_baby_names =
   mutate_all(~replace(., ethnicity == "WHITE NON HISP", "WHITE NON HISPANIC")) %>% 
   distinct()
 
+df_popular_baby_names
+
+
 olivia_data = 
+  filter(df_popular_baby_names, childs_first_name == "Olivia") %>% 
   pivot_wider(
-    df_popular_baby_names,
-    id_cols = c(ethnicity, childs_first_name),
+    id_cols = ethnicity,
     names_from = year_of_birth, 
     values_from = rank
-  ) %>% 
+  )
   #mutate_all(~replace(., is.na(.), 0)) %>% 
-  filter(childs_first_name == "Olivia")
+  
   
 
 
@@ -170,5 +173,14 @@ popular_male_name =
   ) 
 
 popular_male_name
+
+plot_data = 
+  mutate(df_popular_baby_names, count = as.integer(count), rank = as.integer(rank)) %>% 
+  filter(year_of_birth == 2016, ethnicity == "WHITE NON HISPANIC", gender == "MALE") %>% 
+  select(count, rank, childs_first_name) 
+
+plot_data
+
+ggplot(plot_data) + geom_point(aes(x = rank, y = count, color = rank))
 
 ```
