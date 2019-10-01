@@ -6,6 +6,7 @@ output: github_document
 ---
 
 ```{r setup, include = FALSE}
+#set the environment
 knitr::opts_chunk$set(echo = TRUE)
 library("tidyverse")
 library("readxl")
@@ -19,47 +20,74 @@ This is an R Markdown document for homework 2 in course p8105. The author is Jun
 
 ## Problem 1
 
+In the first problem, I need to clean the Mr.Trash Wheel sheet at first. In the following chunk, I need to read the excel file and do some data cleaning.
 ```{r df_trash_wheel_create, collapse = TRUE}
 # read the data frame from excel file on sheet named "Mr. Trash Wheel"
 df_trash_wheel = 
+  #read data from excel file
   read_excel('./HealthyHarborWaterWheelTotals2018-7-28.xlsx', sheet = "Mr. Trash Wheel", skip = 1) %>% 
+  
+  #delete the last columns containing notes
   select(-...15) %>% 
+  
+  #clean columns` names
   janitor::clean_names() %>% 
+  
+  #delete the rows that do not include dumpster-specific data
   drop_na(dumpster) %>% 
-  mutate(sports_balls = as.integer(round(sports_balls)))
+  
+  #round the number of sports balls to the nearest integer and converts the result to an integer variable
+  mutate(sports_balls = as.integer(round(sports_balls, 0)))
   
 # display the data frame
 df_trash_wheel
 ```
 
-
-
+After I have read the sheet named "Mr. Trash Wheel", I need to read and clean precipitation data for 2017 and 2018. In the following chunk, I need to read data from different the excel sheets and do some data cleaning.
 
 
 ```{r df_precipitation_create, collapse = TRUE}
-# read the data frame from excel file on sheet named "Mr. Tra"
+# read the data frame from excel file on sheet named "2017 Precipitation" and "2018 Precipitation".
 
 df_precipitation_2017 = 
+  #read the data on on sheet named "2017 Precipitation" from excel file
   read_excel('./HealthyHarborWaterWheelTotals2018-7-28.xlsx', sheet = "2017 Precipitation", skip = 1) %>% 
+  #clean columns` names
   janitor::clean_names() %>% 
+  
+  #clean up the rows with  Na.
   drop_na() %>% 
+  
+  #add the year variable
   mutate(year = "2017")
 
 
 df_precipitation_2018 = 
+  #read the data on on sheet named "2018 Precipitation" from excel file
   read_excel('./HealthyHarborWaterWheelTotals2018-7-28.xlsx', sheet = "2018 Precipitation", skip = 1) %>% 
+  #clean columns` names
   janitor::clean_names() %>% 
+  
+  #clean up the rows with  Na.
   drop_na() %>% 
+  
+  #add the year variable
   mutate(year = "2018")
 
+#combine precipitation datasets and convert month to a character variable
+
 df_precipitation = 
+  #combine 2 datasets by binding the rows.
   bind_rows(df_precipitation_2017, df_precipitation_2018) %>% 
+  
+  #convert month to a character variable by using month.name
   mutate(month = month.name[month])
 
 # display the data frame
 df_precipitation
 ```
 
+Finally, I need to write a paragraph about the data. As we know, there are totally 2 resulting dataframes named "df_trash_wheel" and "df_precipitation". For the dataframe named "df_trash_wheel", there are totally `r nrow(df_trash_wheel)` observations and `r ncol(df_trash_wheel)` variables. To show the key variables, we will first show the names of variables: `r colnames(df_trash_wheel)`
 
 
 ## Problem 2
@@ -77,7 +105,7 @@ df_pols_month =
     values_to = "president_value",
     names_prefix = "prez_"
   ) %>% 
-  filter(president_value == 1) %>% 
+  filter(president_value != 1) %>% 
   select(-president_value, -day)
   
 #view(df_pols_month)
@@ -141,9 +169,10 @@ df_merge =
 df_popular_baby_names = 
   read_csv('./Popular_Baby_Names.csv') %>% 
   janitor::clean_names() %>% 
-  mutate_all(~replace(., ethnicity == "ASIAN AND PACI", "ASIAN AND PACIFIC ISLANDER")) %>% 
-  mutate_all(~replace(., ethnicity == "BLACK NON HISP", "BLACK NON HISPANIC")) %>% 
-  mutate_all(~replace(., ethnicity == "WHITE NON HISP", "WHITE NON HISPANIC")) %>% 
+  mutate(childs_first_name = str_to_sentence(childs_first_name)) %>% 
+  mutate(ethnicity = replace(ethnicity, ethnicity == "ASIAN AND PACI", "ASIAN AND PACIFIC ISLANDER")) %>% 
+  mutate(ethnicity = replace(ethnicity, ethnicity == "BLACK NON HISP", "BLACK NON HISPANIC")) %>% 
+  mutate(ethnicity = replace(ethnicity, ethnicity == "WHITE NON HISP", "WHITE NON HISPANIC")) %>%
   distinct()
 
 df_popular_baby_names
