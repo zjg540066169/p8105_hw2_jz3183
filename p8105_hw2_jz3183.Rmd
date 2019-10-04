@@ -91,11 +91,21 @@ df_precipitation
 
 Finally, I need to write a paragraph about the data. As we know, there are totally 2 resulting dataframes named "df_trash_wheel" and "df_precipitation". 
 
+&nbsp;
+
 For the dataframe named "df_trash_wheel", there are totally `r nrow(df_trash_wheel)` observations and `r ncol(df_trash_wheel)` variables. To show the key variables, we will first show the names of key variables: `r colnames(df_trash_wheel)[1:6]`. The first variable `r colnames(df_trash_wheel)[1]` is a key for each observation. The 3 variables `r colnames(df_trash_wheel)[2:4]` show the time of each observation, and the 2 variables `r colnames(df_trash_wheel)[5:6]` which indicate the amount of trash in each observation.
+
+&nbsp;
 
 For the dataframe named "df_precipitation", there are totally `r nrow(df_precipitation)` observations and `r ncol(df_precipitation)` variables. To show the key variables, we will first show the names of key variables: `r colnames(df_precipitation)[1:3]`. The first variable `r colnames(df_precipitation)[c(1,3)]` is the date for each observation. The variables `r colnames(df_precipitation)[2]` show the precipitation of each observation.
 
+
+&nbsp;
+
 In addition, for 2 dataframes "df_precipitation_2017" and "df_precipitation_2018", there are totally `r nrow(df_precipitation_2017)` observations and `r ncol(df_precipitation_2017)` variables in "df_precipitation_2017", and `r nrow(df_precipitation_2018)` observations and `r ncol(df_precipitation_2018)` variables in "df_precipitation_2018". To show the key variables, we will first show the names of key variables: `r colnames(df_precipitation)[1:3]`. The first variable `r colnames(df_precipitation)[c(1,3)]` is the date for each observation. The variables `r colnames(df_precipitation)[2]` show the precipitation of each observation.
+
+
+&nbsp;
 
 In 2018, the total precipitation is `r sum(pull(df_precipitation[pull(df_precipitation, year) == 2018,], total))`. In 2017, the median number of sports balls in a dumpster is `r median(pull(df_trash_wheel[pull(df_trash_wheel, year) == 2017,], sports_balls))`.
 
@@ -205,6 +215,8 @@ df_merge
 
 Finally, I will write a short paragraph to explain 4 datasets above briefly.
 
+&nbsp;
+
 Dataset "df_pols_month" contains the data about national politicians who are democratic or republican at any given time. The resulting dataset contains totally `r nrow(df_pols_month)` observations and `r ncol(df_pols_month)` variables: 
 
 * year, month: 2 key variables, the date of count, range from `r pull(df_pols_month, month)[1]`, `r pull(df_pols_month, year)[1]` to `r pull(df_pols_month, month)[nrow(df_pols_month)]`, `r pull(df_pols_month, year)[nrow(df_pols_month)]`.
@@ -216,18 +228,21 @@ Dataset "df_pols_month" contains the data about national politicians who are dem
 * rep_dem: the number of democratic representatives on the associated date.
 * president: key variable, indicate whether the president was republican or democratic governors.
 
+&nbsp;
 
 Dataset "df_snp" contains the data about Standard & Poor’s stock market index (S&P), which is a representative measure of stock market as a whole. The resulting dataset contains totally `r nrow(df_snp)` observations and `r ncol(df_snp)` variables: 
 
 * year, month: 2 key variables, the date of count, range from `r pull(df_snp, month)[1]`, `r pull(df_snp, year)[1]` to `r pull(df_snp, month)[nrow(df_snp)]`, `r pull(df_snp, year)[nrow(df_snp)]`.
 * close: key variable, the closing values of the S&P stock index on the associated date.
 
+&nbsp;
 
 Dataset "df_unemployment" contains the data about percentage of unemployment and date. The resulting dataset contains totally `r nrow(df_unemployment)` observations and `r ncol(df_unemployment)` variables: 
 
 * year, month: 2 key variables, the date of count, range from `r pull(df_unemployment, month)[1]`, `r pull(df_unemployment, year)[1]` to `r pull(df_unemployment, month)[nrow(df_unemployment)]`, `r pull(df_unemployment, year)[nrow(df_unemployment)]`.
 * percentage_of_unemployment: key variable, percentage of unemployment on the associated date.
 
+&nbsp;
 
 Dataset "df_merge" contains the data about S&P, percentage of unemployment and information about national politicians. The resulting dataset contains totally `r nrow(df_merge)` observations and `r ncol(df_merge)` variables: 
 
@@ -248,6 +263,8 @@ Dataset "df_merge" contains the data about S&P, percentage of unemployment and i
 In the third problem, I need to clean the a dataset which contrains the popularity of baby names. In the following chunk, I will read excel file and do some data cleaning.
 
 ```{r df_popular_baby_names_create, collapse = TRUE, message = FALSE}
+#In this chunk, we read data from excel file and do some data cleaning.
+
 # read the data frame from excel file
 df_popular_baby_names = 
   #read data
@@ -273,6 +290,8 @@ df_popular_baby_names
 
 After we clean the data, we need to well-structured, reader-friendly table to show the rank in popularity of the name “Olivia” as a female baby name over time with rows for ethnicities and columns for year. The table are drawed as follow:
 
+&nbsp;
+
 Rank in Popularity of 'Olivia' as a Female Baby Name Over Time
 ```{r df_olivia, collapse = TRUE, echo = FALSE}
 #This code chunk is used to filter the data about "Olivia" and draw the table.
@@ -293,6 +312,8 @@ knitr::kable(olivia_data, booktabs = TRUE)
 
 Then, we need to a table to show the most popular name among male children over time.
 
+&nbsp;
+
 The Most Popular Name among Male Children Over Time
 ```{r popular_male_name, collapse = TRUE, echo = FALSE}
 #This code chunk is used to filter the data about male name with rank 1 and draw the table.
@@ -311,6 +332,7 @@ popular_male_name =
 knitr::kable(popular_male_name, booktabs = TRUE)
 ```
 
+&nbsp;
 
 Finally, we need to draw a scatter plot to show the number of children with a name (y axis) against the rank in popularity of that name (x axis), with data about male, white non-hispanic children born in 2016.
 
