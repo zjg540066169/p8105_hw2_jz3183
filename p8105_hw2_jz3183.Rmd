@@ -25,7 +25,7 @@ In the first problem, I need to clean the Mr.Trash Wheel sheet at first. In the 
 # read the data frame from excel file on sheet named "Mr. Trash Wheel"
 df_trash_wheel = 
   #read data from excel file
-  read_excel('./Trash-Wheel-Collection-Totals-8-6-19.xlsx', sheet = "Mr. Trash Wheel", skip = 1) %>% 
+  read_excel('./Data_Problem_1/Trash-Wheel-Collection-Totals-8-6-19.xlsx', sheet = "Mr. Trash Wheel", skip = 1) %>% 
   
   #delete the last columns containing notes
   select(-...15, -...16, -...17) %>% 
@@ -51,7 +51,7 @@ After I have read the sheet named "Mr. Trash Wheel", I need to read and clean pr
 
 df_precipitation_2017 = 
   #read the data on on sheet named "2017 Precipitation" from excel file
-  read_excel('./Trash-Wheel-Collection-Totals-8-6-19.xlsx', sheet = "2017 Precipitation", skip = 1) %>% 
+  read_excel('./Data_Problem_1/Trash-Wheel-Collection-Totals-8-6-19.xlsx', sheet = "2017 Precipitation", skip = 1) %>% 
   
   #clean columns` names
   janitor::clean_names() %>% 
@@ -65,7 +65,7 @@ df_precipitation_2017 =
 
 df_precipitation_2018 = 
   #read the data on on sheet named "2018 Precipitation" from excel file
-  read_excel('./Trash-Wheel-Collection-Totals-8-6-19.xlsx', sheet = "2018 Precipitation", skip = 1) %>% 
+  read_excel('./Data_Problem_1/Trash-Wheel-Collection-Totals-8-6-19.xlsx', sheet = "2018 Precipitation", skip = 1) %>% 
   
   #clean columns` names
   janitor::clean_names() %>% 
@@ -119,7 +119,7 @@ In the second problem, I need to clean the 3 dataset. In the following chunk, I 
 # read the data frame from excel file in folder named "fivethirtyeight_datasets".
 df_pols_month = 
   #read data
-  read_csv('./fivethirtyeight_datasets/pols-month.csv') %>% 
+  read_csv('./Data_Problem_2/fivethirtyeight_datasets/pols-month.csv') %>% 
   
   #clean names
   janitor::clean_names() %>% 
@@ -149,7 +149,7 @@ df_pols_month =
 
 df_snp = 
   #read data
-  read_csv('./fivethirtyeight_datasets/snp.csv') %>% 
+  read_csv('./Data_Problem_2/fivethirtyeight_datasets/snp.csv') %>% 
   
   #clean names
   janitor::clean_names() %>% 
@@ -171,7 +171,7 @@ df_snp =
 
 df_unemployment = 
   #read data
-  read_csv('./fivethirtyeight_datasets/unemployment.csv') %>% 
+  read_csv('./Data_Problem_2/fivethirtyeight_datasets/unemployment.csv') %>% 
   
   #clean names
   janitor::clean_names() %>% 
