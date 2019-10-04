@@ -52,6 +52,7 @@ After I have read the sheet named "Mr. Trash Wheel", I need to read and clean pr
 df_precipitation_2017 = 
   #read the data on on sheet named "2017 Precipitation" from excel file
   read_excel('./Trash-Wheel-Collection-Totals-8-6-19.xlsx', sheet = "2017 Precipitation", skip = 1) %>% 
+  
   #clean columns` names
   janitor::clean_names() %>% 
   
@@ -65,6 +66,7 @@ df_precipitation_2017 =
 df_precipitation_2018 = 
   #read the data on on sheet named "2018 Precipitation" from excel file
   read_excel('./Trash-Wheel-Collection-Totals-8-6-19.xlsx', sheet = "2018 Precipitation", skip = 1) %>% 
+  
   #clean columns` names
   janitor::clean_names() %>% 
   
