@@ -10,7 +10,6 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 library("tidyverse")
 library("readxl")
-set.seed(1)
 options(tibble.print_min = 3)
 ```
 
@@ -21,14 +20,15 @@ This is an R Markdown document for homework 2 in course p8105. The author is Jun
 ## Problem 1
 
 In the first problem, I need to clean the Mr.Trash Wheel sheet at first. In the following chunk, I need to read the excel file and do some data cleaning.
-```{r df_trash_wheel_create, collapse = TRUE}
+
+```{r df_trash_wheel_create, collapse = TRUE, message = FALSE}
 # read the data frame from excel file on sheet named "Mr. Trash Wheel"
 df_trash_wheel = 
   #read data from excel file
-  read_excel('./HealthyHarborWaterWheelTotals2018-7-28.xlsx', sheet = "Mr. Trash Wheel", skip = 1) %>% 
+  read_excel('./Trash-Wheel-Collection-Totals-8-6-19.xlsx', sheet = "Mr. Trash Wheel", skip = 1) %>% 
   
   #delete the last columns containing notes
-  select(-...15) %>% 
+  select(-...15, -...16, -...17) %>% 
   
   #clean columns` names
   janitor::clean_names() %>% 
@@ -51,7 +51,7 @@ After I have read the sheet named "Mr. Trash Wheel", I need to read and clean pr
 
 df_precipitation_2017 = 
   #read the data on on sheet named "2017 Precipitation" from excel file
-  read_excel('./HealthyHarborWaterWheelTotals2018-7-28.xlsx', sheet = "2017 Precipitation", skip = 1) %>% 
+  read_excel('./Trash-Wheel-Collection-Totals-8-6-19.xlsx', sheet = "2017 Precipitation", skip = 1) %>% 
   #clean columns` names
   janitor::clean_names() %>% 
   
@@ -64,7 +64,7 @@ df_precipitation_2017 =
 
 df_precipitation_2018 = 
   #read the data on on sheet named "2018 Precipitation" from excel file
-  read_excel('./HealthyHarborWaterWheelTotals2018-7-28.xlsx', sheet = "2018 Precipitation", skip = 1) %>% 
+  read_excel('./Trash-Wheel-Collection-Totals-8-6-19.xlsx', sheet = "2018 Precipitation", skip = 1) %>% 
   #clean columns` names
   janitor::clean_names() %>% 
   
@@ -87,129 +87,249 @@ df_precipitation =
 df_precipitation
 ```
 
-Finally, I need to write a paragraph about the data. As we know, there are totally 2 resulting dataframes named "df_trash_wheel" and "df_precipitation". For the dataframe named "df_trash_wheel", there are totally `r nrow(df_trash_wheel)` observations and `r ncol(df_trash_wheel)` variables. To show the key variables, we will first show the names of variables: `r colnames(df_trash_wheel)`
+Finally, I need to write a paragraph about the data. As we know, there are totally 2 resulting dataframes named "df_trash_wheel" and "df_precipitation". 
+
+For the dataframe named "df_trash_wheel", there are totally `r nrow(df_trash_wheel)` observations and `r ncol(df_trash_wheel)` variables. To show the key variables, we will first show the names of key variables: `r colnames(df_trash_wheel)[1:6]`. The first variable `r colnames(df_trash_wheel)[1]` is a key for each observation. The 3 variables `r colnames(df_trash_wheel)[2:4]` show the time of each observation, and the 2 variables `r colnames(df_trash_wheel)[5:6]` which indicate the amount of trash in each observation.
+
+For the dataframe named "df_precipitation", there are totally `r nrow(df_precipitation)` observations and `r ncol(df_precipitation)` variables. To show the key variables, we will first show the names of key variables: `r colnames(df_precipitation)[1:3]`. The first variable `r colnames(df_precipitation)[c(1,3)]` is the date for each observation. The variables `r colnames(df_precipitation)[2]` show the precipitation of each observation.
+
+In addition, for 2 dataframes "df_precipitation_2017" and "df_precipitation_2018", there are totally `r nrow(df_precipitation_2017)` observations and `r ncol(df_precipitation_2017)` variables in "df_precipitation_2017", and `r nrow(df_precipitation_2018)` observations and `r ncol(df_precipitation_2018)` variables in "df_precipitation_2018". To show the key variables, we will first show the names of key variables: `r colnames(df_precipitation)[1:3]`. The first variable `r colnames(df_precipitation)[c(1,3)]` is the date for each observation. The variables `r colnames(df_precipitation)[2]` show the precipitation of each observation.
+
+In 2018, the total precipitation is `r sum(pull(df_precipitation[pull(df_precipitation, year) == 2018,], total))`. In 2017, the median number of sports balls in a dumpster is `r median(pull(df_trash_wheel[pull(df_trash_wheel, year) == 2017,], sports_balls))`.
+
 
 
 ## Problem 2
 
-```{r df_five_thirty_eight_create, collapse = TRUE}
-# read the data frame from excel file on sheet named "Mr. Trash Wheel"
+In the second problem, I need to clean the 3 dataset. In the following chunk, I will read three excel files in a folder and do some data cleaning.
+
+```{r df_five_thirty_eight_create, collapse = TRUE, message = FALSE}
+# read the data frame from excel file in folder named "fivethirtyeight_datasets".
 df_pols_month = 
+  #read data
   read_csv('./fivethirtyeight_datasets/pols-month.csv') %>% 
+  
+  #clean names
   janitor::clean_names() %>% 
+  
+  #separate variable "mon" into 3 columns
   separate(mon, into = c("year", "month", "day"), sep = "-") %>% 
+  
+  #change month into the character of month.name
   mutate(month = month.name[as.integer(month)]) %>% 
+  
+  #set variable "president"
   pivot_longer(
     c(prez_gop, prez_dem),
     names_to = "president", 
     values_to = "president_value",
     names_prefix = "prez_"
   ) %>% 
-  filter(president_value != 1) %>% 
+  
+  #delete the row whose value which is 0
+  filter(president_value != 0) %>% 
+  
+  #delete 2 columns
   select(-president_value, -day)
   
-#view(df_pols_month)
+
+
 
 df_snp = 
+  #read data
   read_csv('./fivethirtyeight_datasets/snp.csv') %>% 
+  
+  #clean names
   janitor::clean_names() %>% 
+  
+  #separate variable "date" into 3 columns
   separate(date, into = c("month", "day", "year"), sep = "/") %>% 
+  
+  #sort date
   arrange(year, month) %>% 
-  mutate(month = month.name[as.integer(month)]) %>% 
+  
+  #change month into the character of month.name
+  mutate(month = month.name[as.integer(month)]) %>%
+  
+  #set variable "year", "month" at first and delete variable "day"
   select(year, month, everything(), -day)
 
 
 
 
 df_unemployment = 
+  #read data
   read_csv('./fivethirtyeight_datasets/unemployment.csv') %>% 
+  
+  #clean names
   janitor::clean_names() %>% 
+  
+  #change variable "year" as character
   mutate(year = as.character(year)) %>% 
+  
+  #spread month data to month columns
   pivot_longer(
     jan:dec,
     names_to = "month", 
-    values_to = "month_value"
+    values_to = "percentage_of_unemployment"
   ) %>% 
+  
+  #change the "month" variable to month.name with first capital letter.
   mutate(month = str_subset(month.name, str_to_sentence(month)))
 
-
-  
-  
-  
-  
-
-
-
-
-  
-  
   
 # display the data frame
 df_pols_month
-df_unemployment 
+
+
 df_snp
+
+
+df_unemployment 
 ```
 
+After data cleaning, I will merge the 3 different dataframe into one.
 
 ```{r df_merge_create, collapse = TRUE}
-# read the data frame from excel file on sheet named "Mr. Tra"
-
+# Join the datasets by merging df_snp into df_pols_month, and merging df_unemployment into the result.
 df_merge = 
   left_join(df_pols_month, df_snp, by = c("year", "month")) %>% 
   left_join(., df_unemployment, by = c("year", "month"))
 
 
+#display the dataframe
+df_merge
 ```
+
+Finally, I will write a short paragraph to explain 4 datasets above briefly.
+
+Dataset "df_pols_month" contains the data about national politicians who are democratic or republican at any given time. The resulting dataset contains totally `r nrow(df_pols_month)` observations and `r ncol(df_pols_month)` variables: 
+
+* year, month: 2 key variables, the date of count, range from `r pull(df_pols_month, month)[1]`, `r pull(df_pols_month, year)[1]` to `r pull(df_pols_month, month)[nrow(df_pols_month)]`, `r pull(df_pols_month, year)[nrow(df_pols_month)]`.
+* gov_gop: the number of republican governors on the associated date.
+* sen_gop: the number of republican senators on the associated date.
+* rep_gop: the number of republican representatives on the associated date.
+* gov_dem: the number of democratic governors on the associated date.
+* sen_dem: the number of democratic senators on the associated date.
+* rep_dem: the number of democratic representatives on the associated date.
+* president: key variable, indicate whether the president was republican or democratic governors.
+
+
+Dataset "df_snp" contains the data about Standard & Poor’s stock market index (S&P), which is a representative measure of stock market as a whole. The resulting dataset contains totally `r nrow(df_snp)` observations and `r ncol(df_snp)` variables: 
+
+* year, month: 2 key variables, the date of count, range from `r pull(df_snp, month)[1]`, `r pull(df_snp, year)[1]` to `r pull(df_snp, month)[nrow(df_snp)]`, `r pull(df_snp, year)[nrow(df_snp)]`.
+* close: key variable, the closing values of the S&P stock index on the associated date.
+
+
+Dataset "df_unemployment" contains the data about percentage of unemployment and date. The resulting dataset contains totally `r nrow(df_unemployment)` observations and `r ncol(df_unemployment)` variables: 
+
+* year, month: 2 key variables, the date of count, range from `r pull(df_unemployment, month)[1]`, `r pull(df_unemployment, year)[1]` to `r pull(df_unemployment, month)[nrow(df_unemployment)]`, `r pull(df_unemployment, year)[nrow(df_unemployment)]`.
+* percentage_of_unemployment: key variable, percentage of unemployment on the associated date.
+
+
+Dataset "df_merge" contains the data about S&P, percentage of unemployment and information about national politicians. The resulting dataset contains totally `r nrow(df_merge)` observations and `r ncol(df_merge)` variables: 
+
+* year, month: 2 key variables, the date of count, range from `r pull(df_merge, month)[1]`, `r pull(df_merge, year)[1]` to `r pull(df_merge, month)[nrow(df_merge)]`, `r pull(df_merge, year)[nrow(df_merge)]`.
+* close: key variable, the closing values of the S&P stock index on the associated date.
+* percentage_of_unemployment: key variable, percentage of unemployment on the associated date.
+* president: key variable, indicate whether the president was republican or democratic governors.
+* gov_gop: the number of republican governors on the associated date.
+* sen_gop: the number of republican senators on the associated date.
+* rep_gop: the number of republican representatives on the associated date.
+* gov_dem: the number of democratic governors on the associated date.
+* sen_dem: the number of democratic senators on the associated date.
+* rep_dem: the number of democratic representatives on the associated date.
 
 
 ## Problem 3
 
-```{r df_popular_baby_names_create, collapse = TRUE}
-# read the data frame from excel file on sheet named "Mr. Trash Wheel"
+In the third problem, I need to clean the a dataset which contrains the popularity of baby names. In the following chunk, I will read excel file and do some data cleaning.
+
+```{r df_popular_baby_names_create, collapse = TRUE, message = FALSE}
+# read the data frame from excel file
 df_popular_baby_names = 
+  #read data
   read_csv('./Popular_Baby_Names.csv') %>% 
+  
+  #clean names
   janitor::clean_names() %>% 
+  
+  #mutate some childs_first_name with uppercase initial.
   mutate(childs_first_name = str_to_sentence(childs_first_name)) %>% 
+  
+  #clean some unconsistent data about ethnicity
   mutate(ethnicity = replace(ethnicity, ethnicity == "ASIAN AND PACI", "ASIAN AND PACIFIC ISLANDER")) %>% 
   mutate(ethnicity = replace(ethnicity, ethnicity == "BLACK NON HISP", "BLACK NON HISPANIC")) %>% 
   mutate(ethnicity = replace(ethnicity, ethnicity == "WHITE NON HISP", "WHITE NON HISPANIC")) %>%
+  
+  #clean the duplicate rows.
   distinct()
 
+#display the data frame
 df_popular_baby_names
+```
 
+After we clean the data, we need to well-structured, reader-friendly table to show the rank in popularity of the name “Olivia” as a female baby name over time with rows for ethnicities and columns for year. The table are drawed as follow:
 
+Rank in Popularity of 'Olivia' as a Female Baby Name Over Time
+```{r df_olivia, collapse = TRUE, echo = FALSE}
+#This code chunk is used to filter the data about "Olivia" and draw the table.
 olivia_data = 
+  #filter data with "Olivia"
   filter(df_popular_baby_names, childs_first_name == "Olivia") %>% 
+  
+  #gather ethnicity as rows, year_of_birth as columns and rank as value in every cell.
   pivot_wider(
     id_cols = ethnicity,
     names_from = year_of_birth, 
     values_from = rank
   )
-  #mutate_all(~replace(., is.na(.), 0)) %>% 
   
-  
+#draw the table
+knitr::kable(olivia_data, booktabs = TRUE)
+```
 
+Then, we need to a table to show the most popular name among male children over time.
 
-olivia_data
-
-
+The Most Popular Name among Male Children Over Time
+```{r popular_male_name, collapse = TRUE, echo = FALSE}
+#This code chunk is used to filter the data about male name with rank 1 and draw the table.
 popular_male_name = 
+  #filter the data about male name with rank 1
   filter(df_popular_baby_names, rank == 1, gender == "MALE") %>% 
+  
+  #gather ethnicity as rows, year_of_birth as columns and childs_first_name as value in every cell.
   pivot_wider(
     id_cols = ethnicity,
     names_from = year_of_birth, 
     values_from = childs_first_name
   ) 
 
-popular_male_name
+#draw the table
+knitr::kable(popular_male_name, booktabs = TRUE)
+```
+
+
+Finally, we need to draw a scatter plot to show the number of children with a name (y axis) against the rank in popularity of that name (x axis), with data about male, white non-hispanic children born in 2016.
+
+```{r male_white_children_rank_plot, collapse = TRUE, echo = FALSE}
+#In this chunk, we draw a scatter plot to show the number of children with a name (y axis) against the rank in popularity of that name (x axis), with data about male, white non-hispanic children born in 2016.
 
 plot_data = 
+  #change variables "count" and "rank" as integer
   mutate(df_popular_baby_names, count = as.integer(count), rank = as.integer(rank)) %>% 
+  
+  #filter the data about male, white non-hispanic children born in 2016.
   filter(year_of_birth == 2016, ethnicity == "WHITE NON HISPANIC", gender == "MALE") %>% 
-  select(count, rank, childs_first_name) 
+  
+  #keep variables "count", "rank" to draw scatter plot.
+  select(count, rank) 
 
-plot_data
+#draw scatter plot
+scatter_plot <- ggplot(plot_data) + geom_point(aes(x = rank, y = count, color = rank)) + labs(title = "Scatterplot of number of children with a name vs rank in popularity", x = "Rank", y = "Number of children with a name") + theme(plot.title = element_text(hjust = 0.5))
 
-ggplot(plot_data) + geom_point(aes(x = rank, y = count, color = rank))
+scatter_plot
 
+#save the scatterplot
+ggsave("count_rank_scatterplot.pdf", scatter_plot, height = 4, width = 6)
 ```
