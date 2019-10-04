@@ -350,7 +350,11 @@ plot_data =
   select(count, rank) 
 
 #draw scatter plot
-scatter_plot <- ggplot(plot_data) + geom_point(aes(x = rank, y = count, color = rank)) + labs(title = "Scatterplot of number of children with a name vs rank in popularity", x = "Rank", y = "Number of children with a name") + theme(plot.title = element_text(hjust = 0.5))
+scatter_plot <- 
+  ggplot(plot_data) + 
+  geom_point(aes(x = rank, y = count, color = rank)) + 
+  labs(title = "Scatterplot of number of children with a name vs rank in popularity", x = "Rank", y = "Number of children with a name") + 
+  theme(plot.title = element_text(hjust = 0.5))
 
 scatter_plot
 
